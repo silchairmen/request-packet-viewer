@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Packet Info</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Packet Info</h1>
+
+        <form id="packetForm">
+            <div class="form-group">
+                <label for="methodSelect">Select Method:</label>
+                <select id="methodSelect" class="form-control">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="HEAD">HEAD</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="urlInput">URL:</label>
+                <input type="text" id="urlInput" class="form-control" value="/info">
+            </div>
+
+            <div class="form-group">
+                <label for="dataInput">Data:</label>
+                <input type="text" id="dataInput" class="form-control" placeholder="Enter data">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send Request</button>
+        </form>
+
+        <div id="responseContainer" class="mt-4"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // 페이지 로드 시 GET 메서드로 패킷을 보여줌
+            showPacketInfo("GET", window.location.href);
+
+            $("#packetForm").submit(function(e) {
+                e.preventDefault();
+
+                var method = $("#methodSelect").val();
+                var url = $("#urlInput").val();
+                var data = $("#dataInput").val();
+
+                showPacketInfo(method, url, data);
+            });
+
+            function showPacketInfo(method, url, data) {
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: { data: data },
+                    success: function(response) {
+                        var url = response.url;
+                        var headerInfo = response.headerInfo;
+                        var responseData = response.data;
+
+                        var html = `
+                            <h3>서버가 받은 정보</h3>
+                            <h4>Header Info:</h4>
+                            <pre>${headerInfo}</pre>
+                            <h4>Response Data:</h4>
+                            <pre>${responseData}</pre>
+                        `;
+
+                        $("#responseContainer").html(html);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
